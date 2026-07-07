@@ -4,27 +4,23 @@ import openpyxl
 import streamlit as st
 import io
 
-# --- 1. Set up the Web App UI ---
 st.set_page_config(page_title="Battery Data Processor", layout="centered")
 st.title("17.5% DoD Battery Data Processor")
 st.write("Upload your raw test data to generate the processed Excel file and charts.")
 
-# Create the file upload box on the web page
 uploaded_file = st.file_uploader("Select Raw Data Excel File", type=["xlsx"])
 
-# --- 2. Process the Data (Only runs if a file is uploaded) ---
 if uploaded_file is not None:
     
-    # Show a loading spinner while the math runs in the background
-    with st.spinner("Processing data... This may take a minute for large files!"):
+
+    with st.spinner("Processing data"):
         try:
-            # Extract Battery Name from B4
+           
             wb = openpyxl.load_workbook(uploaded_file, data_only=True)
             sheet = wb.active
             battery_name = str(sheet['B4'].value)  
             wb.close()
 
-            # IMPORTANT: Reset the file reader back to the top so Pandas can read it!
             uploaded_file.seek(0)
 
             # Load and prepare Sheet 1 Data
