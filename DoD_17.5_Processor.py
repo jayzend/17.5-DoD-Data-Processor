@@ -81,7 +81,7 @@ if uploaded_file is not None:
                     df = df[df['Step'].isin([30])]
                     df = df[df['Voltage'] >= 14.8]
                     df = df[df['Current'] >= 0]
-                    df = df[(df['Step Time'] == '00:00:10.000') & (df['Step Time'] < '00:00:10.1')]
+                    df = df[(df['Step Time'] >= '00:00:10.000') & (df['Step Time'] <= '00:00:10.1')]
                     df = df.dropna(subset=['Temperature'])
                     df['Ampere'] = df['AhStep'] * 360
                     df['A/Ah'] = df['Ampere'] / 60
@@ -106,7 +106,7 @@ if uploaded_file is not None:
                     df2 = df2[df2['Step'].isin([43])]
                     df2 = df2[df2['Voltage'] >= 14.8]
                     df2 = df2[df2['Current'] >= 0]
-                    df2 = df2[(df2['Step Time'] == '00:00:10.000') & (df2['Step Time'] < '00:00:10.1')]
+                    df2 = df2[(df2['Step Time'] >= '00:00:10.000') & (df2['Step Time'] <= '00:00:10.1')]
                     df2 = df2.dropna(subset=['Temperature'])
                     df2['Ampere'] = df2['AhStep'] * 360
                     df2['A/Ah'] = df2['Ampere'] / 60
@@ -130,7 +130,7 @@ if uploaded_file is not None:
                     df3 = df3[df3['Status'] == 'CHA']
                     df3 = df3[df3['Step'].isin([70, 81])]
                     df3 = df3[df3['Cycle Level'] == 3]
-                    df3 = df3[(df3['Step Time'] == '00:00:05.000') & (df3['Step Time'] < '00:00:05.1')]
+                    df3 = df3[(df3['Step Time'] >= '00:00:05.000') & (df3['Step Time'] <= '00:00:05.1')]
                     df3 = df3.dropna(subset=['Temperature'])
                     
                     df3['Time Stamp'] = df3['Time Stamp'].astype(str).str.strip()
@@ -373,7 +373,7 @@ if uploaded_file is not None:
                     df2.rename(columns={df2.columns[1]: 'Status'}, inplace=True) 
                     df2 = df2[df2['Status'] == 'DCH']
                     df2 = df2[df2['Step'].isin([3, 7])]
-                    df2 = df2[(df2['Step Time'] == '00:30:00.000') & (df2['Step Time'] < '00:30:00.1')]
+                    df2 = df2[(df2['Step Time'] >= '00:30:00.000') & (df2['Step Time'] <= '00:30:00.1')]
                     
                     # --- Different Names for Temperatures --- 
                     temp_col = 'Temperature_1' if 'Temperature_1' in df2.columns else 'Temperature'
