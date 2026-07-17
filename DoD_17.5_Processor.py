@@ -63,6 +63,19 @@ if uploaded_file is not None:
             raw_df = pd.read_excel(xl, sheet_name=target_sheet, skiprows=29)
             raw_df.columns = raw_df.columns.astype(str).str.strip()
 
+            # --- CRITICAL FIX: Standardize Step Time Format ---
+            def standardize_time(val):
+                if pd.isna(val):
+                    return pd.NaT
+                val_str = str(val).strip()
+                # If hours are missing (e.g., '00:00.000'), append '00:' to match hh:mm:ss.ttt
+                if val_str.count(':') == 1:
+                    val_str = '00:' + val_str
+                return pd.to_timedelta(val_str, errors='coerce')
+                
+            if 'Step Time' in raw_df.columns:
+                raw_df['Step Time'] = raw_df['Step Time'].apply(standardize_time)
+
             status_text = " - Failed" if is_failed else ""
             output_filename = f'Processed {test_type}{status_text} Battery Results of {battery_code}.xlsx'
 
@@ -81,7 +94,8 @@ if uploaded_file is not None:
                     df = df[df['Step'].isin([30])]
                     df = df[df['Voltage'] >= 14.8]
                     df = df[df['Current'] >= 0]
-                    df = df[(df['Step Time'] >= '00:00:10.000') & (df['Step Time'] <= '00:00:10.1')]
+                    # Update comparison to use pd.to_timedelta
+                    df = df[(df['Step Time'] >= pd.to_timedelta('00:00:10.000')) & (df['Step Time'] <= pd.to_timedelta('00:00:10.100'))]
                     df = df.dropna(subset=['Temperature'])
                     df['Ampere'] = df['AhStep'] * 360
                     df['A/Ah'] = df['Ampere'] / 60
@@ -106,7 +120,8 @@ if uploaded_file is not None:
                     df2 = df2[df2['Step'].isin([43])]
                     df2 = df2[df2['Voltage'] >= 14.8]
                     df2 = df2[df2['Current'] >= 0]
-                    df2 = df2[(df2['Step Time'] >= '00:00:10.000') & (df2['Step Time'] <= '00:00:10.1')]
+                    # Update comparison to use pd.to_timedelta
+                    df2 = df2[(df2['Step Time'] >= pd.to_timedelta('00:00:10.000')) & (df2['Step Time'] <= pd.to_timedelta('00:00:10.100'))]
                     df2 = df2.dropna(subset=['Temperature'])
                     df2['Ampere'] = df2['AhStep'] * 360
                     df2['A/Ah'] = df2['Ampere'] / 60
@@ -130,7 +145,8 @@ if uploaded_file is not None:
                     df3 = df3[df3['Status'] == 'CHA']
                     df3 = df3[df3['Step'].isin([70, 81])]
                     df3 = df3[df3['Cycle Level'] == 3]
-                    df3 = df3[(df3['Step Time'] >= '00:00:05.000') & (df3['Step Time'] <= '00:00:05.1')]
+                    # Update comparison to use pd.to_timedelta
+                    df3 = df3[(df3['Step Time'] >= pd.to_timedelta('00:00:05.000')) & (df3['Step Time'] <= pd.to_timedelta('00:00:05.100'))]
                     df3 = df3.dropna(subset=['Temperature'])
                     
                     df3['Time Stamp'] = df3['Time Stamp'].astype(str).str.strip()
@@ -373,7 +389,8 @@ if uploaded_file is not None:
                     df2.rename(columns={df2.columns[1]: 'Status'}, inplace=True) 
                     df2 = df2[df2['Status'] == 'DCH']
                     df2 = df2[df2['Step'].isin([3, 7])]
-                    df2 = df2[(df2['Step Time'] >= '00:30:00.000') & (df2['Step Time'] <= '00:30:00.1')]
+                    # Update comparison to use pd.to_timedelta
+                    df2 = df2[(df2['Step Time'] >= pd.to_timedelta('00:30:00.000')) & (df2['Step Time'] <= pd.to_timedelta('00:30:00.100'))]
                     
                     # --- Different Names for Temperatures --- 
                     temp_col = 'Temperature_1' if 'Temperature_1' in df2.columns else 'Temperature'
